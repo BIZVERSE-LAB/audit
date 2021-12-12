@@ -7,9 +7,6 @@ import "./openzeppelin/Context.sol";
 abstract contract Blacklistable is Context {
     mapping(address => bool) private _blacklist;
 
-    event AddToBlacklist(address indexed account);
-    event RemoveFromBlacklist(address indexed account);
-
     modifier inBlacklistStatus(address account, bool isBlacklisted) {
         require(
             _blacklist[account] == isBlacklisted,
@@ -21,11 +18,8 @@ abstract contract Blacklistable is Context {
     function _setBlacklistStatus(address account, bool isBlacklisted)
         internal
         virtual
-        inBlacklistStatus(account, !isBlacklisted)
     {
         _blacklist[account] = isBlacklisted;
-        if (isBlacklisted) emit AddToBlacklist(account);
-        else emit RemoveFromBlacklist(account);
     }
 
     function isBlacklist(address account) public view virtual returns (bool) {

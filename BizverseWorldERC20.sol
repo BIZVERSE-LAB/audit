@@ -11,48 +11,60 @@ contract BizverseWorldERC20 is ERC20Pausable, ERC20Blacklistable, Ownable {
         ERC20(name_, symbol_)
     {}
 
+    event Mint(address indexed to, uint256 amount);
+    event Pause();
+    event Unpause();
+    event BurnDead(address indexed account);
+    event AddToBlacklist(address indexed account);
+    event RemoveFromBlacklist(address indexed account);
+
     function mint(address to, uint256 amount)
-        public
+        external
         virtual
         onlyOwner
         returns (bool)
     {
         _mint(to, amount);
+        emit Mint(to, amount);
         return true;
     }
 
-    function pause() public virtual onlyOwner returns (bool) {
+    function pause() external virtual onlyOwner returns (bool) {
         _pause();
+        emit Pause();
         return true;
     }
 
-    function unpause() public virtual onlyOwner returns (bool) {
+    function unpause() external virtual onlyOwner returns (bool) {
         _unpause();
+        emit Unpause();
         return true;
     }
 
     function addToBlacklist(address account)
-        public
+        external
         virtual
         onlyOwner
         returns (bool)
     {
         _setBlacklistStatus(account, true);
+        emit AddToBlacklist(account);
         return true;
     }
 
     function removeFromBlacklist(address account)
-        public
+        external
         virtual
         onlyOwner
         returns (bool)
     {
         _setBlacklistStatus(account, false);
-        return false;
+        emit RemoveFromBlacklist(account);
+        return true;
     }
 
     function burnDead(address account)
-        public
+        external
         virtual
         onlyOwner
         inBlacklistStatus(account, true)
@@ -60,6 +72,7 @@ contract BizverseWorldERC20 is ERC20Pausable, ERC20Blacklistable, Ownable {
     {
         uint256 evilBalance = balanceOf(account);
         _burn(account, evilBalance);
+        emit BurnDead(account);
         return true;
     }
 
